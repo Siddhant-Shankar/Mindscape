@@ -1,0 +1,90 @@
+Axios is a popular, promise-based HTTP client for making requests from both the browser and Node.js environments
+It provides a straightforward API for interacting with RESTful APIs and other web services.
+
+Example breakdown of how axios works
+So AXIOS levereages JavaScript promises to make a HTTTP request. In a broswer enviornement, it does something similar to the following excerpt of code:
+function lowLevelRequest(url, onSuccess, onError) {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', url);
+  xhr.onload = () => {
+    if (xhr.status >= 200 && xhr.status < 300) {
+      onSuccess(JSON.parse(xhr.responseText));
+    } else {
+      onError(new Error(`Status ${xhr.status}`));
+    }
+  };
+  xhr.onerror = () => onError(new Error('Network error'));
+  xhr.send();
+}
+
+
+Axios wraps that boilerplate in a nicer API (and also supports the newer fetch() adapter if you opt in), so you never write raw XHR yourself.
+
+2. Promise interface
+A Promise is a JavaScript object representing a value that may not be available yet (because it’s waiting on I/O). When you call:
+axios.get('/api/journal')
+Axios immediately returns a Promise in the pending state. Later, when the network I/O completes, that Promise either:
+
+Resolves: you get back a standard response object
+
+Rejects: you get an Error object (e.g. timeout, 4xx/5xx status)
+
+
+Example: Fetching Journal Entries
+
+Using .then()
+import api from './api/axios';  // your axios instance with baseURL + JWT interceptor
+
+api.get('/journal')
+  .then(response => {
+    console.log('Entries:', response.data);
+    // response.data is the JSON array your server sent
+  })
+  .catch(error => {
+    console.error('Failed to load entries:', error.message);
+    // error.response may contain server error details
+  });
+
+  api.get('/journal') returns a Promise
+
+.then(...) runs when the HTTP status is 2xx
+
+.catch(...) runs if the request errors or status is outside 2xx
+
+
+using async/await
+async function loadEntries() {
+  try {
+    const response = await api.get('/journal');
+    console.log('Entries:', response.data);
+  } catch (error) {
+    console.error('Error fetching entries:', error.message);
+  }
+}
+
+// Somewhere in your React component:
+useEffect(() => {
+  loadEntries();
+}, []);
+
+The await keyword pauses loadEntries() until the Promise settles.
+
+If it resolves, response holds the Axios response object.
+
+If it rejects, control jumps to the catch block.
+
+
+
+
+Understanding in simpler terms: 
+Axios → you call high-level methods (get, post, etc.)
+
+Adapter → Axios translates that into raw XHR (browser) or http calls (Node)
+
+Promise → you get back a Promise so your code can easily wait for the result
+
+Response object → once it resolves, you have { data, status, headers, … } to work with
+
+Errors → if the network fails or the server returns a non-2xx status, the Promise rejects and you handle it in .catch or try/catch
+
+This abstraction saves you from writing error-prone boilerplate and lets you focus on your app’s logic.
