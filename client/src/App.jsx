@@ -5,10 +5,12 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import NewEntry from './pages/NewEntry.jsx';
 import RequireAuth from './components/RequireAuth.jsx';
+import Navbar  from './components/NavBar.jsx';
 
 export default function App() {
   return (
     <BrowserRouter>
+      <Navbar />
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<LoginPage />} />

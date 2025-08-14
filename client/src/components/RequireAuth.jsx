@@ -11,5 +11,5 @@ export default function RequireAuth({ children }) { //RequireAuth is a wrapper c
     if (!token) nav('/login'); //if token is empty we immeditaely return to /login
   }, [token, nav]);
 
-  return children; //If the user does have a token, it just renders whatever is inside 
+  return children; //If the user does have a token, it just renders whatever is inside RequireAuth
 }

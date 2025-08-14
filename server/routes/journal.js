@@ -52,4 +52,18 @@ and then we create the entry schema according to what it should be stored as in 
 the 2nd .get request deals with getting all the entries from the mongodb schema and then we sort it according to last creation(recent at the top)
 */
 
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const deleted = await Entry.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.userId
+    });
+    if (!deleted) return res.status(404).json({ error: 'Entry not found' });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router; //make this router avaliable to index.js
+
