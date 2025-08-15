@@ -2,6 +2,7 @@
 import express from 'express';
 import jwt     from 'jsonwebtoken';
 import Entry   from '../models/Entry.js';
+import { analyzeSentiment } from '../utils/sentiment.js';
 
 const router = express.Router();
 
@@ -27,7 +28,30 @@ this part is meant for authenticating the user and making sure the jwt token mat
 // Create entry
 router.post('/', auth, async (req, res) => {
   try {
-    const entry = await Entry.create({ ...req.body, userId: req.userId });
+    const { content, mood } = req.body;
+    if (!content || !content.trim()) {
+      return res.status(400).json({ error: 'Content is required' });
+    }
+
+    let sentiment = null;
+    try {
+      sentiment = await analyzeSentiment(content);
+    } catch (e) {
+      console.warn('Sentiment analysis failed:', e.message);
+    }
+
+    const doc = {
+      userId: req.userId,
+      content,
+      mood,
+      ...(sentiment && {
+        sentimentScore: sentiment.sentimentScore,
+        sentimentLabel: sentiment.label,
+        sentimentConfidence: sentiment.confidence,
+      }),
+    };
+
+    const entry = await Entry.create(doc);
     res.status(201).json(entry);
   } catch (err) {
     res.status(500).json({ error: err.message });

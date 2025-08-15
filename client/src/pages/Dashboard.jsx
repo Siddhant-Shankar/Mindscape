@@ -220,15 +220,80 @@ export default function Dashboard() {
                   </p>
                 </div>
                 
-                {typeof entry.sentimentScore === 'number' && (
+                {/* Sentiment Analysis Section */}
+                {(entry.sentimentScore !== undefined || entry.sentimentLabel || entry.sentimentConfidence !== undefined) && (
                   <div className="mt-4 pt-4 border-t border-neutral-200">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 mb-3">
                       <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                       </svg>
-                      <span className="text-sm text-neutral-600">
-                        Sentiment: {entry.sentimentScore.toFixed(2)}
-                      </span>
+                      <span className="text-sm font-medium text-neutral-700">Sentiment Analysis</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {/* Sentiment Score */}
+                      {typeof entry.sentimentScore === 'number' && (
+                        <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-3 border border-blue-200">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium text-blue-700">Sentiment Score</span>
+                            <span className="text-sm font-bold text-blue-900">
+                              {entry.sentimentScore > 0 ? '+' : ''}{entry.sentimentScore.toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="mt-1">
+                            <div className="w-full bg-blue-200 rounded-full h-1.5">
+                              <div 
+                                className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
+                                style={{ 
+                                  width: `${Math.abs(entry.sentimentScore) * 100}%`,
+                                  backgroundColor: entry.sentimentScore > 0 ? '#059669' : entry.sentimentScore < 0 ? '#dc2626' : '#6b7280'
+                                }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Sentiment Label */}
+                      {entry.sentimentLabel && (
+                        <div className="bg-gradient-to-r from-green-50 to-green-100 rounded-lg p-3 border border-green-200">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium text-green-700">Sentiment</span>
+                            <span className={`text-sm font-bold px-2 py-1 rounded-full ${
+                              entry.sentimentLabel === 'POSITIVE' 
+                                ? 'bg-green-200 text-green-800' 
+                                : 'bg-red-200 text-red-800'
+                            }`}>
+                              {entry.sentimentLabel}
+                            </span>
+                          </div>
+                          <div className="mt-1 flex items-center">
+                            <span className="text-xs text-green-600">
+                              {entry.sentimentLabel === 'POSITIVE' ? '😊 Positive' : '😔 Negative'}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Sentiment Confidence */}
+                      {typeof entry.sentimentConfidence === 'number' && (
+                        <div className="bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg p-3 border border-purple-200">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium text-purple-700">Confidence</span>
+                            <span className="text-sm font-bold text-purple-900">
+                              {(entry.sentimentConfidence * 100).toFixed(0)}%
+                            </span>
+                          </div>
+                          <div className="mt-1">
+                            <div className="w-full bg-purple-200 rounded-full h-1.5">
+                              <div 
+                                className="bg-purple-600 h-1.5 rounded-full transition-all duration-300"
+                                style={{ width: `${entry.sentimentConfidence * 100}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
